@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Memo Module</title>
+
+<style>
+/* 最外层框 */
+#memo-module {
+    width: 100%;
+    max-width: 360px;
+    margin: 12px auto;
+    border: 2px solid #666;
+    padding: 10px;
+    font-family: sans-serif;
+    position: relative;
+    box-sizing: border-box;
+    min-height: 520px;
+    background: #fff;
+}
+
+/* 顶部搜索区 */
+.memo-header {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.memo-header input {
+    flex: 1;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #aaa;
+}
+
+.memo-header button {
+    width: 40px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* 列表区 */
+.memo-list {
+    border: 1px solid #ddd;
+    height: 330px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 5px;
+}
+
+.memo-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 4px;
+    border-bottom: 1px solid #eee;
+}
+
+.memo-item-title {
+    cursor: pointer;
+    flex: 1;
+    min-width: 0; /* allow flex item to shrink for text-overflow to work */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 圆形选择框 */
+.memo-select-circle {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #333;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.memo-select-circle.selected {
+    background: #000;
+}
+
+/* 底部按钮 */
+.memo-footer {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.memo-footer button {
+    width: 45%;
+    padding: 6px;
+}
+
+/* 详情（新建/编辑）界面 */
+.memo-detail {
+    position: absolute;
+    inset: 10px; /* 等同于 top:10px; right:10px; bottom:10px; left:10px，尊重 memo-module 的 padding */
+    background: white;
+    border: 2px solid #444;
+    padding: 12px;
+    display: none;
+    z-index: 99;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+/* 详情标题栏 */
+.memo-detail-header {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.memo-close-btn {
+    border: 1px solid #888;
+    background: #eee;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+/* 标题输入框 */
+.memo-title {
+    font-size: 20px;
+    font-weight: bold;
+    width: 100%;
+    margin: 10px 0;
+    box-sizing: border-box;
+    padding: 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* 正文 */
+.memo-content {
+    width: 100%;
+    height: 280px;
+    box-sizing: border-box;
+    padding: 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: sans-serif;
+    font-size: 14px;
+}
+
+/* 标签容器 */
+.memo-tags {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-content: flex-start;
+}
+
+/* 标签 */
+.memo-tag {
+    display: inline-block;
+    background: #eee;
+    padding: 3px 8px;
+    border-radius: 10px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    position: relative;
+}
+
+/* 标签删除按钮 */
+.memo-tag-delete {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 18px;
+    height: 18px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 18px;
+    padding: 0;
+}
+
+.memo-tag:hover .memo-tag-delete {
+    display: block;
+}
+
+.memo-tag-add {
+    width: 22px;
+    height: 22px;
+    border: 1px solid #888;
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.memo-tag-input-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.memo-tag-input {
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 13px;
+}
+
+.memo-tag-error {
+    color: #b00;
+    font-size: 12px;
+}
+
+/* 响应式：手机端优化 */
+@media (max-width: 420px) {
+    #memo-module {
+        width: calc(100% - 20px);
+        max-width: none;
+        margin: 8px auto;
+        padding: 10px;
+        min-height: auto;
+    }
+
+    .memo-header input {
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    .memo-header button {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+    }
+
+    .memo-list {
+        height: 260px;
+    }
+
+    .memo-item {
+        padding: 10px 6px;
+    }
+
+    .memo-select-circle {
+        width: 22px;
+        height: 22px;
+    }
+
+    .memo-footer {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .memo-footer button {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .memo-detail {
+        position: absolute;
+        inset: 10px;
+        padding: 10px;
+        border-radius: 0;
+        box-sizing: border-box;
+        overflow-y: auto;
+    }
+
+    .memo-title {
+        font-size: 18px;
+    }
+
+    .memo-content {
+        height: 35vh;
+        margin: 6px 0;
+    }
+
+    .memo-tag-add {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        font-size: 20px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="memo-module">
+
+    <!-- 搜索栏 -->
+    <div class="memo-header">
+        <input id="memo-search" placeholder="搜索…" />
+        <button id="memo-search-btn">🔍</button>
+    </div>
+
+    <!-- 列表 -->
+    <div id="memo-list" class="memo-list"></div>
+
+    <!-- 底部按钮 -->
+    <div class="memo-footer">
+        <button id="memo-back-btn" style="display:none;">返回</button>
+        <button id="memo-select-btn">选择</button>
+        <button id="memo-new-btn">新建</button>
+        <button id="memo-delete-btn" style="display:none;">删除</button>
+    </div>
+
+    <!-- 详情界面 -->
+    <div id="memo-detail" class="memo-detail">
+        <div class="memo-detail-header">
+            <button id="memo-detail-close" class="memo-close-btn">✖</button>
+        </div>
+
+        <input id="memo-title" class="memo-title" placeholder="标题…" />
+        <div id="memo-warning" style="color:#b00;background:#fee;padding:6px;border-radius:4px;display:none;margin:6px 0;"></div>
+        <textarea id="memo-content" class="memo-content" placeholder="正文…"></textarea>
+
+        <div id="memo-tags" class="memo-tags"></div>
+    </div>
+</div>
+
+<script>
+/* 初始备忘录 */
+let memos = [
+    { id: 1, title: "买菜清单", content: "鸡蛋 牛奶 西红柿", tags: ["生活"] },
+    { id: 2, title: "学习计划", content: "写JS 项目优化", tags: ["重要","学习"] },
+    { id: 3, title: "约见朋友", content: "周五下午 3 点", tags: [] }
+];
+
+let selectMode = false;
+let editingId = null;
+
+/* DOM */
+const listDom = document.getElementById("memo-list");
+const detailDom = document.getElementById("memo-detail");
+const titleDom = document.getElementById("memo-title");
+const contentDom = document.getElementById("memo-content");
+const tagsDom = document.getElementById("memo-tags");
+const warningDom = document.getElementById("memo-warning");
+
+/* 渲染列表 */
+function renderList(filter = "") {
+    listDom.innerHTML = "";
+
+    memos
+        .filter(m =>
+            m.title.includes(filter) ||
+            m.content.includes(filter) ||
+            m.tags.some(t => t.includes(filter))
+        )
+        .forEach(m => {
+            const row = document.createElement("div");
+            row.className = "memo-item";
+
+            const t = document.createElement("div");
+            t.className = "memo-item-title";
+            t.textContent = m.title || "(无标题)";
+            t.title = m.title || "(无标题)";
+            t.onclick = () => openDetail(m.id);
+            row.appendChild(t);
+
+            if (selectMode) {
+                const c = document.createElement("div");
+                c.className = "memo-select-circle";
+                c. onclick = () => {
+                    c.classList.toggle("selected");
+                    m.selected = c.classList.contains("selected");
+                };
+                row.appendChild(c);
+            }
+
+            listDom.appendChild(row);
+        });
+}
+
+/* 搜索 */
+document.getElementById("memo-search-btn").onclick = () => {
+    renderList(document.getElementById("memo-search"). value. trim());
+};
+
+document.getElementById("memo-search").onkeypress = (e) => {
+    if (e.key === "Enter") {
+        renderList(document.getElementById("memo-search"). value. trim());
+    }
+};
+
+/* 选择模式 */
+document. getElementById("memo-select-btn"). onclick = () => {
+    selectMode = true;
+
+    // 在选择模式下：显示左侧返回按钮与右侧删除按钮，隐藏“选择/新建”按钮
+    document.getElementById("memo-select-btn").style.display = "none";
+    document.getElementById("memo-new-btn").style.display = "none";
+    document.getElementById("memo-back-btn").style.display = "block";
+    document.getElementById("memo-delete-btn").style.display = "block";
+
+    renderList();
+};
+
+/* 退出选择模式 */
+function exitSelect() {
+    selectMode = false;
+
+    memos.forEach(m => delete m.selected);
+
+    document.getElementById("memo-select-btn").style.display = "block";
+    document.getElementById("memo-new-btn").style. display = "block";
+    document.getElementById("memo-delete-btn").style.display = "none";
+    document.getElementById("memo-back-btn").style.display = "none";
+
+    renderList();
+}
+
+document.getElementById("memo-delete-btn").onclick = () => {
+    memos = memos.filter(m => ! m.selected);
+    exitSelect();
+};
+
+// 返回（退出选择模式）按钮处理
+document.getElementById('memo-back-btn').onclick = () => {
+    exitSelect();
+};
+
+/* 新建 */
+document.getElementById("memo-new-btn").onclick = () => {
+    openDetail(null);
+};
+
+/* 打开详情界面 */
+function openDetail(id) {
+    detailDom.style.display = "block";
+
+    clearWarning();
+
+    editingId = id;
+
+    if (id === null) {
+        titleDom.value = "";
+        contentDom.value = "";
+        renderTags([]);
+    } else {
+        const m = memos.find(x => x.id === id);
+        titleDom.value = m.title;
+        contentDom.value = m.content;
+        renderTags(m.tags);
+    }
+}
+
+/* 关闭详情 */
+document.getElementById("memo-detail-close").onclick = () => {
+    const title = titleDom.value.trim();
+    const content = contentDom.value.trim();
+    const tags = Array.from(tagsDom.children)
+                    .filter(n => n.dataset.tag)
+                    .map(n => n.dataset.tag);
+
+    // 如果有标签或正文但无标题，提醒并阻止关闭/保存
+    if (title === "" && (tags.length > 0 || content !== "")) {
+        showWarning("有正文或标签但没有标题，请填写标题或删除正文/标签。点击标题可继续编辑。");
+        titleDom.focus();
+        return;
+    }
+    /* 新建且为空 → 不保存 */
+    if (editingId === null) {
+        if (title === "" && content === "") {
+            closeDetail();
+            return;
+        }
+        memos.push({
+            id: Date.now(),
+            title, content, tags
+        });
+        closeDetail();
+        renderList();
+        return;
+    }
+
+    /* 编辑且为空 → 删除 */
+    if (title === "" && content === "") {
+        memos = memos.filter(m => m.id !== editingId);
+        closeDetail();
+        renderList();
+        return;
+    }
+
+    /* 普通保存 */
+    const m = memos.find(x => x. id === editingId);
+    m.title = title;
+    m.content = content;
+    m.tags = tags;
+
+    closeDetail();
+    renderList();
+};
+
+function closeDetail() {
+    detailDom.style.display = "none";
+    document.getElementById("memo-search").value = "";
+    clearWarning();
+}
+
+function showWarning(msg) {
+    if (!warningDom) return;
+    warningDom.textContent = msg;
+    warningDom.style.display = 'block';
+}
+
+function clearWarning() {
+    if (!warningDom) return;
+    warningDom.textContent = '';
+    warningDom.style.display = 'none';
+}
+
+/* 标签逻辑 */
+function renderTags(list) {
+    tagsDom. innerHTML = "";
+    clearWarning();
+
+    list.forEach(tag => {
+        const t = document.createElement("span");
+        t.className = "memo-tag";
+        t.dataset.tag = tag;
+
+        const tagText = document.createElement("span");
+        tagText.textContent = tag;
+        t.appendChild(tagText);
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "memo-tag-delete";
+        deleteBtn.textContent = "✖";
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            renderTags(list.filter(x => x !== tag));
+        };
+        t.appendChild(deleteBtn);
+
+        tagsDom.appendChild(t);
+    });
+
+    if (list.length < 3) {
+        const add = document.createElement("div");
+        add.className = "memo-tag-add";
+        add.textContent = "+";
+
+        add.onclick = () => {
+            // 创建内联输入框（不会使用 prompt/alert）
+            const inputBox = document.createElement('div');
+            inputBox.className = 'memo-tag-input-box';
+
+            const input = document.createElement('input');
+            input.className = 'memo-tag-input';
+            input.placeholder = '新标签（≤4字）';
+            input.maxLength = 12;
+
+            const ok = document.createElement('button');
+            ok.textContent = '✓';
+            ok.style.padding = '4px 8px';
+
+            const cancel = document.createElement('button');
+            cancel.textContent = '✖';
+            cancel.style.padding = '4px 8px';
+
+            const err = document.createElement('div');
+            err.className = 'memo-tag-error';
+            err.style.display = 'none';
+
+            input.addEventListener('input', () => {
+                if (input.value.trim().length > 4) {
+                    err.textContent = '不能超过4字';
+                    err.style.display = 'block';
+                } else {
+                    err.textContent = '';
+                    err.style.display = 'none';
+                }
+            });
+
+            ok.addEventListener('click', () => {
+                const nt = input.value.trim();
+                if (!nt) {
+                    renderTags(list);
+                    return;
+                }
+                if (nt.length > 4) {
+                    err.textContent = '不能超过4字';
+                    err.style.display = 'block';
+                    return;
+                }
+                renderTags([...list, nt]);
+            });
+
+            cancel.addEventListener('click', () => {
+                renderTags(list);
+            });
+
+            inputBox.appendChild(input);
+            inputBox.appendChild(ok);
+            inputBox.appendChild(cancel);
+            inputBox.appendChild(err);
+
+            tagsDom.appendChild(inputBox);
+            input.focus();
+        };
+
+        tagsDom.appendChild(add);
+    }
+}
+
+// 清除警告，当用户开始输入标题或正文时
+titleDom.oninput = clearWarning;
+contentDom.oninput = clearWarning;
+
+/* 初次渲染 */
+renderList();
+</script>
+
+</body>
+</html>
