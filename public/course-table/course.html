@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>课程表</title>
+    <link rel="stylesheet" href="course.css">
+</head>
+<body>
+
+<div id="course-table-container">
+    <div id="course-table-wrapper">
+    <div class="controls">
+        <button id="clear-all">删除全部课程</button>
+    </div>
+
+    <table id="course-table">
+        <thead>
+            <tr>
+                <th>节次/星期</th>
+                <th>周一</th>
+                <th>周二</th>
+                <th>周三</th>
+                <th>周四</th>
+                <th>周五</th>
+                <th>周六</th>
+                <th>周日</th>
+            </tr>
+        </thead>
+        <tbody id="course-body">
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<!-- 添加课程弹窗 -->
+<div id="course-modal" class="modal">
+    <div class="modal-content">
+        <h3>添加课程</h3>
+
+        <label>课程名称</label>
+        <input id="course-name" class="input">
+
+        <label>课程编号（可选）</label>
+        <input id="course-code" class="input">
+
+        <label>教师</label>
+        <input id="course-teacher" class="input">
+
+        <label>周数（如 1-18）</label>
+        <input id="course-weeks" class="input">
+
+        <label>教室</label>
+        <input id="course-room" class="input">
+
+        <label>课程颜色</label>
+        <div id="course-colors" class="color-choices">
+            <button type="button" class="color-swatch" data-color="#a8c6ff" style="background:#a8c6ff" aria-label="color1"></button>
+            <button type="button" class="color-swatch" data-color="#ffd7a8" style="background:#ffd7a8" aria-label="color2"></button>
+            <button type="button" class="color-swatch" data-color="#b8f2d8" style="background:#b8f2d8" aria-label="color3"></button>
+            <button type="button" class="color-swatch" data-color="#f8b8d8" style="background:#f8b8d8" aria-label="color4"></button>
+            <input id="course-color-picker" class="color-picker" type="color" value="#a8c6ff" title="自定义颜色">
+            <input type="hidden" id="course-color" value="#a8c6ff">
+        </div>
+
+        <div class="modal-buttons">
+            <div id="course-warning" class="modal-warning" style="display:none"></div>
+            <button id="save-course">保存</button>
+            <button id="cancel-course">取消</button>
+        </div>
+    </div>
+</div>
+
+<script src="course.js"></script>
+
+</body>
+</html>
