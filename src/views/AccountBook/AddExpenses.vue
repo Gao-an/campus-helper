@@ -2,7 +2,6 @@
   <div class="addRecordPage">
     
     <header class="page-header">
-      <button @click="$router.push('/')" class="backbutton">返回</button>
       <h1>添加支出</h1>
     </header>
     
