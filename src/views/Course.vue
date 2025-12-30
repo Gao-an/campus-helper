@@ -1,7 +1,7 @@
 <template>
   <div id="course-table-container">
     <div id="course-table-wrapper">
-      <!-- 标题区域（统一风格） -->
+      <!-- 标题区域（和备忘录完全一致） -->
       <div class="course-header">
         <h2>📚 课程表</h2>
         <p>轻松管理你的课程安排</p>
@@ -80,7 +80,7 @@
       </table>
     </div>
 
-    <!-- 添加课程弹窗（修复显示+统一风格） -->
+    <!-- 添加课程弹窗（和备忘录弹窗样式一致） -->
     <div id="course-modal" class="modal" v-show="modalVisible">
       <div class="modal-content">
         <div class="modal-header">
@@ -170,22 +170,15 @@ export default {
   name: 'CourseTable',
   data() {
     return {
-      // 核心数据
       courses: [],
-      rows: 12, // 节次数量
-      cols: 7,  // 星期列数（周一到周日）
-      
-      // 选择状态
+      rows: 12,
+      cols: 7,
       selecting: false,
-      selectedCells: [], // 格式: [{ row: number, col: number }]
+      selectedCells: [],
       disableSelect: false,
-      
-      // 弹窗状态
       modalVisible: false,
       warningVisible: false,
       warningMsg: '',
-      
-      // 表单数据
       formData: {
         name: '',
         code: '',
@@ -194,62 +187,52 @@ export default {
         room: '',
         color: '#a8c6ff'
       },
-      
-      // 编辑状态
       editingCourseIndex: null,
       activeCourseCell: null,
       isTouchDevice: false,
-      
-      // 触屏双击状态
       lastTapTime: 0,
       lastTapCell: null,
       TAP_TIMEOUT: 350,
-      
-      // 颜色预设（统一风格配色）
       colorSwatches: [
         '#a8c6ff',
         '#ffd7a8',
         '#b8f2d8',
         '#f8b8d8',
-        '#e8a8ff', // 新增紫色系（与备忘录统一）
+        '#e8a8ff',
         '#ffc8a8'
       ]
     };
   },
   mounted() {
-    // 初始化设备检测
+    // 设备检测（和备忘录一致）
     this.isTouchDevice = matchMedia('(pointer: coarse)').matches;
     const pointerQuery = matchMedia('(pointer: coarse)');
     pointerQuery.addEventListener('change', (e) => {
       this.isTouchDevice = e.matches;
-      this.$forceUpdate(); // 强制更新视图
+      this.$forceUpdate();
     });
-    // ==========核心新增：初始化加载本地存储的课程数据==========
+    // 加载本地存储数据
     this.loadCoursesFromLocalStorage();
   },
   methods: {
-    // ==========【核心新增】本地存储 方法（和备忘录/账本完全一致）==========
-    // 从本地缓存加载课程表数据
+    // 本地存储方法（和备忘录、记账本完全一致）
     loadCoursesFromLocalStorage() {
       const savedCourses = localStorage.getItem('campusCourses');
       if (savedCourses) {
         try {
           this.courses = JSON.parse(savedCourses);
         } catch (e) {
-          // 解析失败用空数组
           this.courses = [];
         }
       } else {
-        // 无缓存数据时为空
         this.courses = [];
       }
     },
-    // 保存课程表数据到本地缓存
     saveCoursesToLocalStorage() {
       localStorage.setItem('campusCourses', JSON.stringify(this.courses));
     },
 
-    // 颜色工具方法
+    // 颜色对比方法（保留）
     hexToLuma(hex) {
       const c = hex.replace('#', '');
       const r = parseInt(c.substring(0, 2), 16) / 255;
@@ -266,7 +249,7 @@ export default {
       this.formData.color = hex;
     },
     
-    // 警告控制
+    // 警告控制（保留）
     showCourseWarning(msg) {
       this.warningVisible = true;
       this.warningMsg = msg;
@@ -276,7 +259,7 @@ export default {
       this.warningMsg = '';
     },
     
-    // 选择逻辑
+    // 选择逻辑（保留原有，不新增复杂功能）
     startSelect(row, col) {
       if (this.disableSelect) return;
       this.selecting = true;
@@ -292,9 +275,7 @@ export default {
       this.selecting = false;
       
       if (this.selectedCells.length > 0) {
-        // 重置编辑状态
         this.editingCourseIndex = null;
-        // 清空表单
         this.formData = {
           name: '',
           code: '',
@@ -303,7 +284,6 @@ export default {
           room: '',
           color: '#a8c6ff'
         };
-        // 打开弹窗
         this.openCourseForm();
       }
     },
@@ -321,7 +301,7 @@ export default {
       this.selectedCells = [];
     },
     
-    // 触摸处理
+    // 触摸处理（保留原有）
     handleTouchMove(e) {
       const t = e.touches[0];
       if (!t) return;
@@ -333,7 +313,7 @@ export default {
       }
     },
     
-    // 弹窗控制
+    // 弹窗控制（保留）
     openCourseForm() {
       this.modalVisible = true;
       this.clearCourseWarning();
@@ -344,9 +324,8 @@ export default {
       this.editingCourseIndex = null;
     },
     
-    // 课程操作
+    // 课程操作（保留）
     saveCourse() {
-      // 验证表单
       const { name, code, teacher, weeks, room } = this.formData;
       if (!name && !code && !teacher && !weeks && !room) {
         this.showCourseWarning('请填写至少一项课程信息（例如：课程名称、教师或教室），以便区分课程。');
@@ -359,16 +338,12 @@ export default {
       };
       
       if (this.editingCourseIndex !== null) {
-        // 编辑现有课程
         this.courses[this.editingCourseIndex] = courseData;
       } else {
-        // 新增课程
         this.courses.push(courseData);
       }
-      // ==========核心新增：保存后同步到本地缓存==========
       this.saveCoursesToLocalStorage();
       
-      // 重置状态
       this.clearSelection();
       this.closeModal();
       this.editingCourseIndex = null;
@@ -376,18 +351,15 @@ export default {
     },
     deleteCourse(course) {
       this.courses = this.courses.filter(c => c !== course);
-      // ==========核心新增：删除后同步到本地缓存==========
       this.saveCoursesToLocalStorage();
     },
     clearAllCourses() {
       this.courses = [];
-      // ==========核心新增：清空后同步到本地缓存==========
       this.saveCoursesToLocalStorage();
     },
     
-    // 单元格辅助方法
+    // 单元格辅助方法（保留）
     getCourseForCell(row, col) {
-      // 找到包含该单元格的课程（主单元格）
       return this.courses.find(course => {
         const minR = Math.min(...course.cells.map(c => c.row));
         const maxR = Math.max(...course.cells.map(c => c.row));
@@ -397,7 +369,6 @@ export default {
       });
     },
     isCellHidden(row, col) {
-      // 检查单元格是否被合并隐藏
       for (const course of this.courses) {
         const minR = Math.min(...course.cells.map(c => c.row));
         const maxR = Math.max(...course.cells.map(c => c.row));
@@ -410,7 +381,6 @@ export default {
       return false;
     },
     getCellRowSpan(row, col) {
-      // 获取单元格的rowspan值
       const course = this.getCourseForCell(row, col);
       if (course) {
         const rows = course.cells.map(c => c.row);
@@ -419,13 +389,12 @@ export default {
       return 1;
     },
     isDeleteBtnVisible(row, col) {
-      // 控制删除按钮显示状态
       if (!this.isTouchDevice) return false;
       const course = this.getCourseForCell(row, col);
       return this.activeCourseCell === course;
     },
     
-    // 触屏双击处理
+    // 触屏双击处理（保留）
     handleCourseItemTap(row, col, e) {
       if (!this.isTouchDevice) return;
       
@@ -434,7 +403,6 @@ export default {
       const course = this.getCourseForCell(row, col);
       const tappedDelete = e.target.closest && e.target.closest('.delete-btn');
       
-      // 检查是否是双击
       const isSecondTap = 
         this.lastTapCell && 
         this.lastTapCell.row === row && 
@@ -443,29 +411,17 @@ export default {
         (now - this.lastTapTime <= this.TAP_TIMEOUT);
       
       if (isSecondTap) {
-        // 进入编辑模式
         this.editingCourseIndex = this.courses.indexOf(course);
-        
-        // 选中课程对应的单元格
         this.selectedCells = course.cells.map(c => ({ row: c.row, col: c.col }));
-        
-        // 填充表单
         this.formData = { ...course };
-        
-        // 打开弹窗
         this.openCourseForm();
-        
-        // 重置双击状态
         this.lastTapTime = 0;
         this.lastTapCell = null;
         this.activeCourseCell = null;
       } else {
-        // 第一次点击：显示删除按钮
         this.activeCourseCell = course;
         this.lastTapTime = now;
         this.lastTapCell = tappedCell;
-        
-        // 隐藏其他删除按钮
         this.$forceUpdate();
       }
     }
@@ -474,7 +430,7 @@ export default {
 </script>
 
 <style scoped>
-/* 全局容器 - 统一渐变背景 */
+/* 全局容器 - 完全复刻备忘录的全屏自适应 */
 #course-table-container {
   min-height: 100vh;
   width: 100%;
@@ -483,81 +439,104 @@ export default {
   align-items: center;
   text-align: center;
   background: radial-gradient(circle at center, rgb(222, 189, 241) 0%, rgba(245, 230, 255, 0) 100%);
-  padding: 40px 20px;
+  padding: 20px 15px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, '微软雅黑', sans-serif;
-  max-width: 800px;
-  margin: 0 auto;
   box-sizing: border-box;
+  margin: 0 auto;
 }
 
-/* 标题区域（统一风格） */
+/* 标题样式 - 和备忘录完全一致 */
 .course-header {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   width: 100%;
 }
-
 .course-header h2 {
   margin-bottom: 10px;
   font-size: 2.2em;
   color: #2c3e50;
 }
-
 .course-header p {
   font-size: 1.2em;
   color: #7f8c8d;
   margin-bottom: 20px;
 }
 
-/* 包裹器，允许在小屏横向滚动表格 */
+/* 表格包裹器 - 核心：移动端横向滚动（和备忘录列表滚动一致） */
 #course-table-wrapper {
   width: 100%;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch; /* 移动端弹性滚动 */
   border-radius: 15px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   margin-bottom: 20px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+#course-table-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
+/* 表格样式 - 适配核心 */
 #course-table {
   width: 100%;
+  min-width: 600px; /* 保证表格最小宽度，小屏横向滚动 */
   border-collapse: collapse;
   table-layout: fixed;
   background: white;
 }
-
 #course-table th, #course-table td {
   border: 1px solid #ddd;
   height: 60px;
   text-align: center;
   position: relative;
-	padding: 5px;
+  padding: 5px;
   box-sizing: border-box;
+  word-wrap: break-word;
+  word-break: break-all;
 }
 
-/* 表头样式统一 */
+/* 表头样式 的渐变和粘性定位 */
 #course-table th {
   background: linear-gradient(135deg, rgb(207, 157, 241) 0%, rgb(149, 65, 205) 100%);
   color: white;
   font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+#course-table th:first-child,
+#course-table td:first-child {
+  position: sticky;
+  left: 0;
+  background: white;
+  z-index: 20;
+  font-weight: 600;
+}
+#course-table th:first-child {
+  background: linear-gradient(135deg, rgb(149, 65, 205) 0%, rgb(207, 157, 241) 100%);
+  color: white;
 }
 
+/* 控制按钮 按钮样式 */
 .controls {
-  margin: 10px 15px;
+  margin: 10px 0;
   text-align: right;
+  width: 100%;
+  padding: 0 5px;
+  box-sizing: border-box;
 }
-
 .controls button {
   background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
   color: white;
   border: none;
   padding: 10px 18px;
-	border-radius: 15px;
+  border-radius: 15px;
   transition: all 0.3s ease;
   font-size: 1em;
   font-weight: 600;
   cursor: pointer;
 }
-
 .controls button:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -568,7 +547,7 @@ export default {
   background: rgba(207, 157, 241, 0.2);
 }
 
-/* 课程卡片样式（统一风格） */
+/* 课程卡片 的卡片样式 */
 .course-item {
   height: 100%;
   width: 100%;
@@ -583,14 +562,14 @@ export default {
   justify-content: space-evenly;
   align-items: center;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  overflow: hidden;
 }
-
 .course-item strong {
   font-size: 14px;
   font-weight: 600;
 }
 
-/* 删除按钮样式统一 */
+/* 删除按钮 - 和备忘录删除按钮样式一致 */
 .delete-btn {
   position: absolute;
   top: 3px;
@@ -607,20 +586,17 @@ export default {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
 .course-item:hover .delete-btn {
   opacity: 1;
 }
-
 .delete-btn.hidden {
   opacity: 0 !important;
 }
-
 .delete-btn.visible {
   opacity: 1 !important;
 }
 
-/* 弹窗样式（完全统一） */
+/* 弹窗样式 - 完全复刻备忘录弹窗 */
 .modal {
   position: fixed;
   top: 0;
@@ -632,20 +608,21 @@ export default {
   align-items: center;
   justify-content: center;
   z-index: 999;
+  padding: 15px;
+  box-sizing: border-box;
 }
-
 .modal-content {
   background: white;
   padding: 25px;
-  width: 90%;
-  max-width: 400px;
+  width: 100%;
+  max-width: 460px;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   position: relative;
   box-sizing: border-box;
+  max-height: 92vh;
+  overflow-y: auto;
 }
-
-/* 弹窗头部 */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -654,15 +631,13 @@ export default {
   border-bottom: 1px solid #eee;
   padding-bottom: 10px;
 }
-
 .modal-header h3 {
   margin: 0;
   font-size: 1.5em;
   color: #2c3e50;
 }
-
 .modal-close-btn {
-	border: 1px solid #888;
+  border: 1px solid #888;
   background: #eee;
   border-radius: 50%;
   width: 32px;
@@ -674,14 +649,13 @@ export default {
   justify-content: center;
   transition: all 0.3s ease;
 }
-
 .modal-close-btn:hover {
   background: #e74c3c;
   color: white;
   border-color: #e74c3c;
 }
 
-/* 输入框样式统一 */
+/* 输入框 输入框 */
 .input {
   width: 100%;
   padding: 12px 15px;
@@ -692,14 +666,13 @@ export default {
   transition: all 0.3s ease;
   box-sizing: border-box;
 }
-
 .input:focus {
   outline: none;
   border-color: rgb(207, 157, 241);
   box-shadow: 0 0 0 3px rgba(207, 157, 241, 0.2);
 }
 
-/* 警告提示样式统一 */
+/* 警告提示  */
 .modal-warning {
   color: #b00;
   background: linear-gradient(180deg,#fff6f7,#ffecec);
@@ -712,48 +685,41 @@ export default {
   text-align: left;
 }
 
-/* 颜色选择区域 */
+/* 颜色选择器  */
 .color-choices {
   display: flex;
   gap: 10px;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
-
 .color-swatch {
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  border: 2px solid transparent;
-  cursor: pointer;
-  padding: 0;
+  border: none;
   transition: all 0.3s ease;
 }
-
 .color-swatch.selected {
   border-color: rgb(149, 65, 205);
   box-shadow: 0 0 0 3px rgba(207, 157, 241, 0.2);
   transform: translateY(-2px);
 }
-
 .color-picker {
   width: 38px;
   height: 38px;
-  padding: 0;
   border: none;
-  background: none;
-  cursor: pointer;
   border-radius: 8px;
 }
 
-/* 弹窗按钮区域 */
+/* 弹窗按钮  */
 .modal-buttons {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
   margin-top: 15px;
+  width: 100%;
 }
-
 .modal-buttons button {
   padding: 12px 20px;
   border-radius: 10px;
@@ -766,86 +732,120 @@ export default {
   align-items: center;
   gap: 8px;
 }
-
 #save-course {
   background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
   color: white;
 }
-
 #cancel-course {
   background: #f8f9fa;
   color: #7f8c8d;
   border: 1px solid #ddd;
 }
-
 .modal-buttons button:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-/* 响应式适配（统一风格） */
+/* 平板端 768px以下 */
 @media (max-width: 768px) {
   #course-table-container {
-    padding: 20px 10px;
-    max-width: 100%;
+    padding: 15px 8px;
   }
-  
-  #course-table th, #course-table td {
-    height: 80px;
-    font-size: 0.9em;
-  }
-  
   .course-header h2 {
     font-size: 1.8em;
   }
-  
   .course-header p {
     font-size: 1em;
+    margin-bottom: 15px;
+  }
+  #course-table th, #course-table td {
+    height: 70px;
+    font-size: 0.9em;
+    padding: 3px;
+  }
+  .course-item {
+    font-size: 12px;
+    padding: 5px;
+  }
+  .course-item strong {
+    font-size: 13px;
   }
 }
 
+/* 手机端 420px以下 */
 @media (max-width: 420px) {
-  .modal-content {
-    width: 95%;
-    padding: 20px 15px;
-    max-height: 90vh;
-    overflow-y: auto;
+  #course-table-container {
+    padding: 10px 5px;
   }
-  
+  .course-header h2 {
+    font-size: 1.6em;
+  }
+  .course-header p {
+    font-size: 0.95em;
+    margin-bottom: 10px;
+  }
+  #course-table th, #course-table td {
+    height: 80px;
+    font-size: 0.85em;
+  }
+  .controls {
+    text-align: center;
+  }
+  .controls button {
+    width: 100%;
+    padding: 10px 0;
+    margin-bottom: 8px;
+  }
+  .modal-content {
+    width: 98%;
+    padding: 20px 15px;
+    max-height: 95vh;
+  }
   .modal-buttons {
     flex-direction: column;
     gap: 8px;
   }
-  
   .modal-buttons button {
     width: 100%;
     justify-content: center;
-    padding: 10px 0;
   }
-  
-  .color-swatch {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .color-picker {
-    width: 42px;
-    height: 42px;
-  }
-  
   .delete-btn {
     opacity: 1;
-    width: 28px;
-    height: 28px;
-    line-height: 26px;
-    font-size: 18px;
-    top: 2px;
-    right: 2px;
+    width: 22px;
+    height: 22px;
+    line-height: 20px;
+    font-size: 14px;
   }
-  
-  .controls button {
-    width: 100%;
-    margin-bottom: 10px;
+}
+
+/* 小屏手机 375px以下 */
+@media (max-width: 375px) {
+  #course-table th, #course-table td {
+    height: 70px;
+  }
+  .course-item {
+    padding: 3px;
+    font-size: 11px;
+  }
+  .delete-btn {
+    width: 20px;
+    height: 20px;
+    line-height: 18px;
+    font-size: 12px;
+  }
+}
+
+/* 横屏适配 */
+@media (orientation: landscape) and (max-width: 768px) {
+  #course-table-container {
+    padding: 10px 5px;
+  }
+  #course-table th, #course-table td {
+    height: 50px;
+  }
+  .modal-content {
+    max-height: 98vh;
+    width: 85%;
   }
 }
 </style>

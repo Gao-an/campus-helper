@@ -1,6 +1,5 @@
 <template>
   <div class="recordListPage">
-    <!-- 保持原有header，但移除多余样式，和支出页统一 -->
     <header class="page-header">
       <h1>账单记录</h1>
     </header>
@@ -128,20 +127,23 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 页面基础样式，和支出页统一背景渐变 */
+/* 全局容器 - 强制占满全屏 */
 .recordListPage {
   min-height: 100vh;
-  background: radial-gradient(circle at center, rgb(222, 189, 241) 0%, rgba(245, 230, 255, 0) 100%);
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  background: radial-gradient(circle at center, rgb(222, 189, 241) 0%, rgba(245, 230, 255, 0) 100%);
+  padding: 20px 15px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+  margin: 0;
 }
 
-/* 页面标题，和支出页统一 */
+/* 页面标题 */
 .page-header {
   width: 100%;
-  max-width: 500px;
   text-align: center;
   margin-bottom: 30px;
   position: relative;
@@ -149,20 +151,32 @@ onMounted(() => {
 
 h1 {
   color: #2d3748;
-  font-size: 28px;
+  font-size: 2.2em;
   margin: 20px 0;
+  line-height: 1.2;
 }
 
+/* 表单容器 - 移除max-width限制，占满全屏 */
 .formContainer {
   background: white;
   padding: 40px;
-  border-radius: 20px;
+  border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 500px; /* 和支出页一致的最大宽度 */
+  min-width: 300px;
+  box-sizing: border-box;
+  overflow: hidden;
+  max-width: none; /* 彻底移除最大宽度限制 */
 }
 
-/* 筛选栏样式微调，适配容器 */
+/* 筛选栏 + 记录列表 - 限制内容最大宽度（可选），居中显示 */
+.filterSection, .recordContainer, .emptyState {
+  width: 100%;
+  max-width: 1200px; /* 宽屏时内容最大宽度，避免拉伸 */
+  margin: 0 auto;
+}
+
+/* 筛选栏样式 */
 .filterSection {
   display: flex;
   justify-content: space-between;
@@ -172,6 +186,7 @@ h1 {
   border-radius: 12px;
   box-shadow: none;
   margin-bottom: 25px;
+  box-sizing: border-box;
 }
 
 .typeFilter {
@@ -179,24 +194,28 @@ h1 {
   border: 2px solid #e2e8f0;
   border-radius: 12px;
   background: white;
-  font-size: 15px;
+  font-size: 1em;
   cursor: pointer;
   transition: all 0.3s ease;
+  min-width: 120px;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .typeFilter:focus {
   outline: none;
   border-color: rgb(207, 157, 240);
   background: white;
+  box-shadow: 0 0 0 3px rgba(207, 157, 241, 0.2);
 }
 
 .totalAmount {
-  font-size: 18px;
+  font-size: 1.1em;
   font-weight: bold;
   color: rgb(149, 65, 205);
 }
 
-/* 记录列表样式适配容器 */
+/* 记录列表样式 */
 .recordContainer {
   display: flex;
   flex-direction: column;
@@ -214,6 +233,8 @@ h1 {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   border-left: 4px solid rgb(207, 157, 240);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .recordItem:hover {
@@ -231,19 +252,23 @@ h1 {
 
 .recordLeft {
   flex: 1;
+  min-width: 0;
 }
 
 .recordContent {
-  font-size: 16px;
+  font-size: 1em;
   font-weight: 600;
   color: #2d3748;
   margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .recordMeta {
   display: flex;
   gap: 15px;
-  font-size: 13px;
+  font-size: 0.85em;
   color: #718096;
 }
 
@@ -252,16 +277,17 @@ h1 {
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .incomeAmount {
-  font-size: 18px;
+  font-size: 1.1em;
   font-weight: bold;
   color:#38b2ac;
 }
 
 .expenseAmount {
-  font-size: 18px;
+  font-size: 1.1em;
   font-weight: bold;
   color: #f56565;
 }
@@ -273,79 +299,87 @@ h1 {
   padding: 6px 12px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 0.85em;
   font-weight: 500;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(245, 101, 101, 0.2);
   min-width: 60px;
 }
 
-/* 空状态样式，和支出页统一 */
+.deleteBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+}
+
+/* 空状态样式 */
 .emptyState {
   text-align: center;
   padding: 40px 20px;
   background: #f8fafc;
   border-radius: 12px;
   box-shadow: none;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .emptyState p {
-  font-size: 18px;
+  font-size: 1.1em;
   color: #718096;
   margin-bottom: 20px;
 }
 
 .addButton {
-  background: #45a049;
+  background: linear-gradient(135deg, #45a049 0%, #2ecc71 100%);
   color: white;
   border: none;
   padding: 12px 30px;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1em;
   font-weight: 600;
   transition: all 0.3s ease;
   margin-top: 10px;
   align-self: center;
-  box-shadow: 0 6px 20px rgba(64, 138, 72, 0.4); 
+  box-shadow: 0 6px 20px rgba(64, 138, 72, 0.4);
+  width: 100%;
+  max-width: 200px;
 }
 
 .addButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(42, 102, 47, 0.4); 
+  box-shadow: 0 10px 25px rgba(42, 102, 47, 0.4);
 }
 
-/* 移动端适配，和支出页完全统一 */
+/* 768px以下 - 平板+大屏手机适配 */
 @media (max-width: 768px) {
   .recordListPage {
-    padding: 15px;
+    padding: 15px 8px;
   }
 
   .page-header {
     margin-bottom: 20px;
-    max-width: calc(100% - 20px);
   }
 
   h1 {
-    font-size: 24px;
+    font-size: 1.8em;
     margin: 10px 0;
   }
 
   .formContainer {
-    padding: 25px 20px;
-    margin: 0 10px;
-    width: calc(100% - 20px);
-    max-width: none;
+    padding: 25px 15px;
+    border-radius: 15px;
   }
 
   .filterSection {
     flex-direction: column;
     gap: 10px;
     padding: 10px;
+    max-width: none; /* 移动端筛选栏占满 */
   }
 
   .typeFilter {
     width: 100%;
+    min-width: unset;
   }
 
   .recordItem {
@@ -363,6 +397,96 @@ h1 {
 
   .deleteBtn {
     min-width: 60px;
+  }
+
+  .filterSection, .recordContainer, .emptyState {
+    max-width: none; /* 移动端内容占满 */
+  }
+}
+
+/* 420px以下 - 主流小屏手机适配 */
+@media (max-width: 420px) {
+  .recordListPage {
+    padding: 15px 8px;
+  }
+
+  .page-header {
+    margin-bottom: 15px;
+  }
+
+  h1 {
+    font-size: 1.6em;
+  }
+
+  .formContainer {
+    padding: 20px 10px;
+    border-radius: 10px;
+  }
+
+  .filterSection {
+    margin-bottom: 20px;
+  }
+
+  .totalAmount {
+    font-size: 1em;
+  }
+
+  .recordItem {
+    padding: 12px 10px;
+    border-radius: 10px;
+  }
+
+  .recordContent {
+    font-size: 0.95em;
+  }
+
+  .recordMeta {
+    font-size: 0.8em;
+    gap: 10px;
+  }
+
+  .incomeAmount, .expenseAmount {
+    font-size: 1em;
+  }
+
+  .deleteBtn {
+    padding: 5px 10px;
+    font-size: 0.8em;
+    min-width: 50px;
+  }
+
+  .emptyState {
+    padding: 30px 15px;
+  }
+
+  .emptyState p {
+    font-size: 1em;
+  }
+
+  .addButton {
+    padding: 10px 20px;
+    font-size: 0.95em;
+    max-width: none;
+    width: 100%;
+  }
+}
+
+/* 横屏适配 */
+@media (orientation: landscape) {
+  .recordListPage {
+    padding: 10px 15px;
+  }
+
+  .formContainer {
+    padding: 20px 25px;
+  }
+
+  .recordContainer {
+    gap: 10px;
+  }
+
+  .recordItem {
+    padding: 12px 15px;
   }
 }
 </style>

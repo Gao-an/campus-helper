@@ -222,22 +222,27 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 核心：复用支出页的容器布局，限制最大宽度 */
+/* 全局容器 - 强制占满全屏，和其他页面统一 */
 .statisticsPage {
   min-height: 100vh;
-  background: rgb(245, 236, 251);
+  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center; /* 整体居中 */
-  padding: 20px;
+  align-items: center;
+  background: radial-gradient(circle at center, rgb(222, 189, 241) 0%, rgba(245, 230, 255, 0) 100%);
+  padding: 20px 15px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+  margin: 0;
 }
+
 .page-header {
   width: 100%;
-  max-width: 500px; /* 和支出页一致 */
   text-align: center;
   margin-bottom: 30px;
   position: relative;
 }
+
 .backbutton {
   position: absolute;
   left: 20px;
@@ -253,28 +258,43 @@ onMounted(() => {
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px rgba(159, 122, 234, 0.2);
 }
+
 .backbutton:hover {
   background: #805ad5;
   transform: translateY(-50%) scale(1.05);
   box-shadow: 0 6px 8px rgba(159, 122, 234, 0.3);
 }
+
 h1 {
   color: #2d3748;
-  font-size: 28px; /* 和支出页一致 */
+  font-size: 2.2em;
   margin: 20px 0;
+  line-height: 1.2;
 }
-/* 核心：新增容器，和支出页formContainer样式完全一致 */
+
+/* 核心修改：移除max-width限制，占满全屏，仅限制最小宽度 */
 .formContainer {
   background: white;
   padding: 40px;
-  border-radius: 20px;
+  border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 500px; /* 和支出页一致，限制最大宽度 */
+  min-width: 300px;
+  box-sizing: border-box;
+  overflow: hidden;
+  max-width: none; /* 彻底移除最大宽度限制 */
 }
+
+/* 内容容器：限制宽屏时的最大宽度，居中显示（可选，避免超宽拉伸） */
+.dateFilter, .overviewCards, .chartsSection, .topRecords {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 .dateFilter {
-  background: transparent; /* 去掉原有背景，复用容器背景 */
-  padding: 0 0 25px 0; /* 仅保留底部间距 */
+  background: transparent;
+  padding: 0 0 25px 0;
   border-radius: 0;
   box-shadow: none;
   margin-bottom: 25px;
@@ -283,130 +303,169 @@ h1 {
   gap: 20px;
   align-items: end;
 }
+
 .filterGroup {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
 }
+
 .filterGroup label {
   color: #4a5568;
   font-weight: 600;
   font-size: 14px;
+  letter-spacing: 0.5px;
+  text-align: left;
 }
+
 .filterGroup input {
-  padding: 12px;
+  padding: 12px 15px;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 1em;
   transition: all 0.3s ease;
-  background: #f8fafc; /* 和支出页输入框一致 */
+  background: #f8fafc;
+  width: 100%;
+  min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
 }
+
 .filterGroup input:focus {
   outline: none;
   border-color: #9f7aea;
+  background: white;
   box-shadow: 0 0 0 3px rgba(159, 122, 234, 0.1);
-  background: white; /* 聚焦时和支出页一致 */
 }
+
 .filterButton {
-  background: #9f7aea;
+  background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
   color: white;
   border: none;
-  padding: 12px;
+  padding: 12px 15px;
   border-radius: 12px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1em;
   font-weight: 600;
   transition: all 0.3s ease;
+  width: 100%;
 }
+
 .filterButton:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(159, 122, 234, 0.3);
 }
+
 .overviewCards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px; /* 缩小间距，适配窄容器 */
+  gap: 20px;
   margin-bottom: 30px;
 }
+
 .overviewCard {
-  padding: 20px 15px; /* 缩小内边距 */
-  border-radius: 20px;
+  padding: 20px 15px;
+  border-radius: 15px;
   color: white;
   text-align: center;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
+
 .incomeCard {
-  background: #4fd1c5;
+  background: linear-gradient(135deg, #4fd1c5 0%, #319795 100%);
 }
+
 .expenseCard {
-  background: #f56565;
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
 }
+
 .balanceCard {
-  background: #9f7aea;
+  background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
 }
+
 .overviewCard h3 {
   margin: 0 0 10px 0;
-  font-size: 14px; /* 缩小字体 */
+  font-size: 1em;
   opacity: 0.9;
   font-weight: 500;
 }
+
 .overviewCard .amount {
   margin: 0;
-  font-size: 22px; /* 缩小字体 */
+  font-size: 1.4em;
   font-weight: bold;
 }
+
 .chartsSection {
   display: grid;
-  grid-template-columns: 1fr; /* 改为单列，适配窄容器 */
+  grid-template-columns: repeat(2, 1fr); /* 宽屏时双列显示 */
   gap: 25px;
   margin-bottom: 30px;
 }
+
 .chartContainer {
-  background: transparent; /* 去掉背景，复用容器背景 */
-  padding: 0 0 25px 0; /* 仅保留底部间距 */
+  background: transparent;
+  padding: 0 0 25px 0;
   border-radius: 0;
   box-shadow: none;
+  width: 100%;
 }
+
 .chartContainer h3 {
   margin: 0 0 20px 0;
   text-align: center;
   color: #2d3748;
-  font-size: 16px; /* 缩小字体 */
+  font-size: 1.1em;
 }
+
 .chart {
   display: flex;
   flex-direction: column;
-  gap: 15px; /* 缩小间距 */
+  gap: 15px;
+  width: 100%;
 }
+
 .chartItem {
   display: flex;
   align-items: center;
-  gap: 10px; /* 缩小间距 */
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
 }
+
 .chartLabel {
   flex: 1;
   display: flex;
   justify-content: space-between;
-  min-width: 100px; /* 缩小最小宽度 */
-  font-size: 13px; /* 缩小字体 */
+  min-width: 100px;
+  font-size: 0.9em;
 }
+
 .typeName {
   color: #2d3748;
   font-weight: 500;
 }
+
 .typeAmount {
   color: #718096;
   font-weight: 600;
 }
+
 .chartBarContainer {
-  flex: 2;
+  flex: 3;
   height: 20px;
   background: #f0f0f0;
   border-radius: 10px;
   overflow: hidden;
   position: relative;
+  width: 100%;
 }
+
 .chartBar {
   height: 100%;
   background: linear-gradient(90deg, #f56565, #e53e3e);
@@ -415,110 +474,213 @@ h1 {
   min-width: 3px;
   display: block !important;
 }
+
 .chartContainer:last-child .chartBar {
   background: linear-gradient(90deg, #4fd1c5, #319795);
   min-width: 3px;
   display: block !important;
 }
+
 .chartBar:not([style*="width:"]) {
   width: 10% !important;
 }
+
 .percentage {
-  min-width: 40px; /* 缩小最小宽度 */
+  min-width: 60px;
   text-align: right;
-  font-size: 13px; /* 缩小字体 */
+  font-size: 0.9em;
   font-weight: 600;
   color: #2d3748;
+  flex-shrink: 0;
 }
+
 .topRecords {
   display: grid;
-  grid-template-columns: 1fr; /* 改为单列，适配窄容器 */
+  grid-template-columns: repeat(2, 1fr); /* 宽屏时双列显示 */
   gap: 25px;
+  width: 100%;
 }
+
 .topSection {
-  background: transparent; /* 去掉背景，复用容器背景 */
+  background: transparent;
   padding: 0;
   border-radius: 0;
   box-shadow: none;
+  width: 100%;
 }
+
 .topSection h3 {
   margin: 0 0 15px 0;
   text-align: center;
   color: #2d3748;
-  font-size: 16px; /* 缩小字体 */
+  font-size: 1.1em;
 }
+
 .topRecordItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0; /* 缩小内边距 */
+  padding: 10px 0;
   border-bottom: 1px solid #f0f0f0;
+  width: 100%;
+  box-sizing: border-box;
 }
+
 .topRecordItem:last-child {
   border-bottom: none;
 }
+
 .recordTitle {
-  font-size: 14px; /* 缩小字体 */
+  font-size: 0.95em;
   color: #4a5568;
   max-width: 70%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .recordAmount {
   font-weight: bold;
-  font-size: 15px; /* 缩小字体 */
+  font-size: 1em;
 }
+
 .topSection:first-child .recordAmount {
   color:#f56565;
 }
+
 .topSection:last-child .recordAmount {
   color:#4fd1c5;
 }
 
-/* 移动端适配（复用支出页逻辑） */
+/* 768px以下 - 平板+大屏手机适配 */
 @media (max-width: 768px) {
   .statisticsPage {
-    padding: 15px;
+    padding: 15px 8px;
   }
+
   .page-header {
     margin-bottom: 20px;
-    max-width: calc(100% - 20px);
   }
+
+  h1 {
+    font-size: 1.8em;
+    margin: 10px 0;
+  }
+
   .formContainer {
-    padding: 25px 20px;
-    margin: 0 10px;
-    width: calc(100% - 20px);
+    padding: 25px 15px;
+    border-radius: 15px;
+  }
+
+  /* 移动端内容占满，取消最大宽度限制 */
+  .dateFilter, .overviewCards, .chartsSection, .topRecords {
     max-width: none;
   }
+
   .dateFilter {
     grid-template-columns: 1fr;
     gap: 15px;
     padding-bottom: 20px;
   }
+
   .overviewCards {
     grid-template-columns: 1fr;
     gap: 15px;
     margin-bottom: 25px;
   }
+
   .chartsSection {
+    grid-template-columns: 1fr;
     gap: 20px;
     margin-bottom: 25px;
   }
+
   .chartItem {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
+
   .chartBarContainer {
     width: 100%;
     flex: none;
   }
+
   .percentage {
     align-self: flex-end;
+    min-width: unset;
   }
+
   .topRecords {
+    grid-template-columns: 1fr;
     gap: 20px;
+  }
+}
+
+/* 420px以下 - 主流小屏手机适配 */
+@media (max-width: 420px) {
+  .statisticsPage {
+    padding: 15px 8px;
+  }
+
+  .page-header {
+    margin-bottom: 15px;
+  }
+
+  h1 {
+    font-size: 1.6em;
+  }
+
+  .formContainer {
+    padding: 20px 10px;
+    border-radius: 10px;
+  }
+
+  .overviewCard h3 {
+    font-size: 0.9em;
+  }
+
+  .overviewCard .amount {
+    font-size: 1.2em;
+  }
+
+  .chartLabel {
+    font-size: 0.85em;
+  }
+
+  .percentage {
+    font-size: 0.85em;
+  }
+
+  .recordTitle {
+    font-size: 0.9em;
+  }
+
+  .recordAmount {
+    font-size: 0.95em;
+  }
+}
+
+/* 横屏适配 */
+@media (orientation: landscape) {
+  .statisticsPage {
+    padding: 10px 15px;
+  }
+
+  .formContainer {
+    padding: 20px 25px;
+  }
+
+  .overviewCards {
+    gap: 15px;
+  }
+
+  .chartsSection {
+    gap: 15px;
+  }
+
+  .topRecords {
+    gap: 15px;
   }
 }
 </style>

@@ -281,28 +281,32 @@ export default {
 </script>
 
 <style scoped>
-/* 页面基础样式 */
+/* 全局容器 - 强制占满全屏，和其他页面统一 */
 .todoListPage {
   min-height: 100vh;
-  background: radial-gradient(circle at center, rgb(222, 189, 241) 0%, rgba(245, 230, 255, 0) 100%);
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  background: radial-gradient(circle at center, rgb(222, 189, 241) 0%, rgba(245, 230, 255, 0) 100%);
+  padding: 20px 15px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+  margin: 0;
 }
 
-/* 标题样式 */
+/* 标题样式 - 全屏适配 */
 .page-header {
   width: 100%;
-  max-width: 500px;
   text-align: center;
   margin-bottom: 30px;
+  box-sizing: border-box;
 }
 .page-header h1 {
   color: #2d3748;
-  font-size: 28px;
+  font-size: 2.2em;
   margin: 20px 0 10px;
+  line-height: 1.2;
 }
 .page-header p {
   font-size: 1.2em;
@@ -310,14 +314,25 @@ export default {
   margin-bottom: 0;
 }
 
-/* 主容器 */
+/* 主容器 - 移除max-width限制，占满全屏 */
 .formContainer {
   background: white;
   padding: 40px;
-  border-radius: 20px;
+  border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 500px;
+  min-width: 300px;
+  box-sizing: border-box;
+  overflow: hidden;
+  max-width: none; /* 彻底移除最大宽度限制 */
+}
+
+/* 内容容器：限制宽屏时的最大宽度，居中显示 */
+.input-section, .filter-section, .tasks-section, .stats-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* 输入区域 */
@@ -325,25 +340,41 @@ export default {
   margin-bottom: 20px;
   padding-bottom: 15px;
   border-bottom: 1px solid #f0f0f0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 宽屏时三列布局 */
+  gap: 15px;
+  align-items: flex-end;
+}
+/* 输入框占满整列，按钮单独一行 */
+.input-section input:nth-child(1),
+.input-section input:nth-child(2),
+.input-section select {
+  grid-column: span 1;
+  width: 100%;
+  margin-bottom: 0;
+}
+.input-section .primaryBtn,
+.input-section .cancelBtn {
+  grid-column: span 3;
+  width: 100%;
+  margin-bottom: 10px;
 }
 .input-section input,
 .input-section select {
-  display: block;
-  width: 100%;
-  margin-bottom: 15px;
   padding: 12px 15px;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
   background: white;
   color: #2d3748;
-  font-size: 15px;
+  font-size: 1em;
   transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 .input-section input:focus,
 .input-section select:focus {
   outline: none;
   border-color: rgb(207, 157, 240);
-  box-shadow: 0 0 0 3px rgba(207, 157, 240, 0.2);
+  box-shadow: 0 0 0 3px rgba(207, 157, 241, 0.2);
 }
 
 /* 按钮样式 */
@@ -354,10 +385,8 @@ export default {
   padding: 12px 0;
   border-radius: 12px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1em;
   font-weight: 600;
-  width: 100%;
-  margin-bottom: 10px;
   transition: all 0.3s ease;
 }
 .primaryBtn:hover {
@@ -371,9 +400,8 @@ export default {
   padding: 12px 0;
   border-radius: 12px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1em;
   font-weight: 600;
-  width: 100%;
   transition: all 0.3s ease;
 }
 .cancelBtn:hover {
@@ -400,6 +428,7 @@ export default {
   flex: 1;
   min-width: 80px;
   transition: all 0.3s ease;
+  font-size: 0.95em;
 }
 .filter-btn.active {
   background: linear-gradient(135deg, rgb(149, 65, 205) 0%, rgb(207, 157, 240) 100%);
@@ -417,9 +446,9 @@ export default {
   min-height: 200px;
 }
 .task-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* 宽屏时多列布局 */
+  gap: 15px;
   margin-bottom: 25px;
 }
 
@@ -435,6 +464,7 @@ export default {
   transition: all 0.3s ease;
   /* 未完成状态：紫色边框（核心） */
   border-left: 4px solid rgb(207, 157, 240);
+  box-sizing: border-box;
 }
 /* 完成状态：绿色边框（核心，覆盖未完成样式） */
 .task-item.task-completed {
@@ -473,12 +503,13 @@ export default {
 /* 任务内容 */
 .task-content {
   flex: 1;
+  min-width: 0;
 }
 .task-title {
   margin-bottom: 5px;
   font-weight: 600;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1em;
   color: #2d3748;
   transition: all 0.3s ease;
 }
@@ -488,7 +519,7 @@ export default {
   font-weight: normal;
 }
 .task-meta {
-  font-size: 13px;
+  font-size: 0.85em;
   color: #718096;
   display: flex;
   gap: 15px;
@@ -498,7 +529,7 @@ export default {
   padding: 2px 8px;
   border-radius: 8px;
   background: #f0f0f0;
-  font-size: 12px;
+  font-size: 0.8em;
 }
 
 /* 任务操作按钮 */
@@ -514,7 +545,7 @@ export default {
   padding: 6px 10px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 0.85em;
   transition: all 0.3s ease;
 }
 .editBtn:hover {
@@ -527,7 +558,7 @@ export default {
   padding: 6px 10px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 0.85em;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(245, 101, 101, 0.2);
 }
@@ -542,20 +573,22 @@ export default {
   background: #f8fafc;
   border-radius: 12px;
   box-shadow: none;
+  width: 100%;
+  box-sizing: border-box;
 }
 .empty-state p {
-  font-size: 18px;
+  font-size: 1.1em;
   color: #718096;
   margin-bottom: 10px;
 }
 .addButton {
-  background: #45a049;
+  background: linear-gradient(135deg, #45a049 0%, #2ecc71 100%);
   color: white;
   border: none;
   padding: 12px 30px;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1em;
   font-weight: 600;
   transition: all 0.3s ease;
   margin-top: 10px;
@@ -563,7 +596,7 @@ export default {
 }
 .addButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(42, 102, 47, 0.4);
+  box-shadow: 0 10px 25px rgba(42, 102, 47, 0.4);
 }
 
 /* 统计区域 */
@@ -573,7 +606,7 @@ export default {
   padding: 15px;
   border-top: 1px solid #f0f0f0;
   margin-bottom: 20px;
-  font-size: 14px;
+  font-size: 1em;
   background: #f8fafc;
   border-radius: 12px;
 }
@@ -591,21 +624,49 @@ export default {
   color: #f56565;
 }
 
-/* 移动端适配 */
+/* 768px以下 - 平板+大屏手机适配 */
 @media (max-width: 768px) {
   .todoListPage {
-    padding: 15px;
+    padding: 15px 8px;
   }
+
   .page-header {
     margin-bottom: 20px;
-    max-width: calc(100% - 20px);
   }
+
+  .page-header h1 {
+    font-size: 1.8em;
+  }
+
   .formContainer {
-    padding: 25px 20px;
-    margin: 0 10px;
-    width: calc(100% - 20px);
+    padding: 25px 15px;
+    border-radius: 15px;
+  }
+
+  /* 移动端内容占满，取消最大宽度限制 */
+  .input-section, .filter-section, .tasks-section, .stats-section {
     max-width: none;
   }
+
+  /* 移动端输入区域单列布局 */
+  .input-section {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .input-section input:nth-child(1),
+  .input-section input:nth-child(2),
+  .input-section select,
+  .input-section .primaryBtn,
+  .input-section .cancelBtn {
+    grid-column: span 1;
+  }
+
+  /* 移动端任务列表单列布局 */
+  .task-list {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
   .task-item {
     flex-direction: column;
     align-items: flex-start;
@@ -615,10 +676,75 @@ export default {
     width: 100%;
     justify-content: flex-end;
   }
+
   .stats-section {
     flex-direction: column;
     gap: 10px;
     text-align: center;
+  }
+}
+
+/* 420px以下 - 主流小屏手机适配 */
+@media (max-width: 420px) {
+  .todoListPage {
+    padding: 15px 8px;
+  }
+
+  .page-header {
+    margin-bottom: 15px;
+  }
+
+  .page-header h1 {
+    font-size: 1.6em;
+  }
+
+  .formContainer {
+    padding: 20px 10px;
+    border-radius: 10px;
+  }
+
+  .filter-btn {
+    min-width: unset;
+    padding: 8px 10px;
+    font-size: 0.9em;
+  }
+
+  .task-meta {
+    font-size: 0.8em;
+    gap: 10px;
+  }
+
+  .editBtn, .deleteBtn {
+    padding: 5px 8px;
+    font-size: 0.8em;
+  }
+
+  .empty-state p {
+    font-size: 1em;
+  }
+
+  .addButton {
+    padding: 10px 20px;
+    font-size: 0.95em;
+  }
+}
+
+/* 横屏适配 */
+@media (orientation: landscape) {
+  .todoListPage {
+    padding: 10px 15px;
+  }
+
+  .formContainer {
+    padding: 20px 25px;
+  }
+
+  .task-list {
+    gap: 12px;
+  }
+
+  .task-item {
+    padding: 12px 15px;
   }
 }
 </style>
