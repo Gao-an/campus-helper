@@ -1,5 +1,64 @@
-# Vue 3 + Vite
+# 🎓 校园生活助手 (Campus Life Assistant)
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+一个基于 Vue 3 开发的校园生活管理一站式解决方案，旨在帮助学生高效规划学习与生活。
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## ✨ 项目特色
+
+- **🗂️ 模块化设计**：四大功能模块，各司其职，满足校园生活核心需求。
+- **🎯 纯前端实现**：基于 Vue 3 Composition API，无需后端.
+- **🎨 统一UI设计**：简洁现代的界面，提供一致的用户体验。
+- **📱 响应式布局**：支持在桌面端和移动端浏览器上使用。
+
+## 🚀 功能模块
+
+### 1. 课程表
+- 周视图展示，一目了然
+- 详细的课程信息（名称、教师、地点等）
+- 快速添加删除课程
+
+### 2. 个人账本 
+- 记录每日收入与支出
+- 智能分类（餐饮、学习、娱乐等）
+- 月度消费统计与可视化
+
+### 3. 备忘录 
+- 创建、编辑、删除笔记
+- 笔记分类与标签管理
+- 按标题关键字搜索
+
+### 4. 任务待办
+- 任务增删改查
+- 设置截止日期与优先级
+- 多种视图筛选（全部/待办/已完成）
+
+## 🛠️ 技术栈
+
+- **核心框架**: Vue 3 + Composition API
+- **开发语言**: TypeScript + JavaScript
+- **路由管理**: Vue Router
+- **构建工具**: Vite
+- **数据存储**: Browser LocalStorage
+- **UI 风格**: 自定义CSS
+
+## 📦 安装与运行
+
+### 环境要求
+- Node.js (版本 16 或以上)
+- npm 包管理器
+
+### 运行步骤
+1. **克隆项目**
+   ```bash
+   git clone 'https://github.com/Gao-an/campus-helper.git'
+   cd campus-helper
+   ```
+2. **安装依赖**
+    ```bash
+    npm install
+    ```
+3. **启动开发服务器**
+    ```bash
+    npm run dev
+    ```
+4. **访问项目**
+    打开浏览器并访问: `http://localhost:5173`
